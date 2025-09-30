@@ -11,7 +11,7 @@
             "program": "${command:cmake.launchTargetPath}",
             "args": [],
             "cwd": "${command:cmake.getLaunchTargetDirectory}",
-            "console": "integratedTerminal",
+            "console": "internalConsole",
             "initCommands": [
                 "command script import ${workspaceFolder}/debugger/register.py",
             ]
