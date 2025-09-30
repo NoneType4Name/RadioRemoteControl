@@ -4,6 +4,7 @@
 #include <minwindef.h>
 #include <string>
 #include <iostream>
+#include <winnt.h>
 
 class uart
 {
@@ -12,20 +13,41 @@ class uart
   public:
     uart( const char *port )
     {
-        hComm = CreateFileA( port,                  // port name
-                             GENERIC_WRITE,         // Read/Write
-                             0,                     // No Sharing
-                             NULL,                  // No Security
-                             OPEN_EXISTING,         // Open existing port only
-                             FILE_ATTRIBUTE_NORMAL, // Non Overlapped I/O
+        hComm = CreateFileA( port,                         // port name
+                             GENERIC_WRITE | GENERIC_READ, // Read/Write
+                             0,                            // No Sharing
+                             NULL,                         // No Security
+                             OPEN_EXISTING,                // Open existing port only
+                             FILE_ATTRIBUTE_NORMAL,        // Non Overlapped I/O
                              NULL );
 
         if ( hComm == INVALID_HANDLE_VALUE )
         {
-            std::cerr << "Error in opening serial port”";
+            std::cerr << "Error in opening serial port";
         }
         else
             std::cerr << "opening serial port successful";
+
+        DCB dcbSerialParams       = { 0 };
+        dcbSerialParams.DCBlength = sizeof( dcbSerialParams );
+        GetCommState( hComm, &dcbSerialParams );
+
+        dcbSerialParams.BaudRate = CBR_9600;
+        dcbSerialParams.ByteSize = 8;
+        dcbSerialParams.StopBits = ONESTOPBIT;
+        dcbSerialParams.Parity   = NOPARITY;
+        SetCommState( hComm, &dcbSerialParams );
+
+        COMMTIMEOUTS timeouts                = { 0 };
+        timeouts.ReadIntervalTimeout         = 20;
+        timeouts.ReadTotalTimeoutConstant    = 100;
+        timeouts.ReadTotalTimeoutMultiplier  = 10;
+        timeouts.WriteTotalTimeoutConstant   = 100;
+        timeouts.WriteTotalTimeoutMultiplier = 10;
+        if ( !SetCommTimeouts( hComm, &timeouts ) )
+        {
+            std::cerr << "Error setting timeouts" << std::endl;
+        }
     }
     ~uart()
     {
@@ -36,14 +58,14 @@ class uart
     {
         char ch;
         DWORD readedBytes { 0 };
-        while ( ReadFile( hComm, &ch, 1, &readedBytes, NULL ) && readedBytes > 0 )
+        while ( ReadFile( hComm, &ch, sizeof( ch ), &readedBytes, NULL ) && readedBytes > 0 )
         {
             if ( ch == '\n' )
             {
-                break; // Конец строки
+                break;
             }
             if ( ch != '\r' )
-            { // Пропускаем carriage return
+            {
                 buffer += ch;
             }
         }
@@ -54,10 +76,10 @@ class uart
         DWORD writenBytes { 0 };
         while ( !writenBytes )
         {
-            WriteFile( hComm,                                 // Handle to the Serial port
-                       buffer.data(),                         // Data to be written to the port
-                       sizeof( buffer[ 0 ] ) * buffer.size(), // No of bytes to write
-                       &writenBytes,                          // Bytes written
+            WriteFile( hComm,
+                       buffer.data(),
+                       sizeof( buffer[ 0 ] ) * buffer.size(),
+                       &writenBytes,
                        NULL );
         }
     }
