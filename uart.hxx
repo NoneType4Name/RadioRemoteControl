@@ -1,9 +1,11 @@
 #include <Windows.h>
 #include <cassert>
+#include <errhandlingapi.h>
 #include <handleapi.h>
 #include <minwindef.h>
 #include <string>
 #include <iostream>
+#include <winbase.h>
 #include <winnt.h>
 
 class uart
@@ -14,7 +16,7 @@ class uart
     uart( const char *port )
     {
         hComm = CreateFileA( port,                         // port name
-                             GENERIC_WRITE | GENERIC_READ, // Read/Write
+                             GENERIC_READ | GENERIC_WRITE, // Read/Write
                              0,                            // No Sharing
                              NULL,                         // No Security
                              OPEN_EXISTING,                // Open existing port only
@@ -32,22 +34,25 @@ class uart
         dcbSerialParams.DCBlength = sizeof( dcbSerialParams );
         GetCommState( hComm, &dcbSerialParams );
 
-        dcbSerialParams.BaudRate = CBR_9600;
-        dcbSerialParams.ByteSize = 8;
-        dcbSerialParams.StopBits = ONESTOPBIT;
-        dcbSerialParams.Parity   = NOPARITY;
+        dcbSerialParams.BaudRate        = CBR_9600;
+        dcbSerialParams.ByteSize        = 8;
+        dcbSerialParams.StopBits        = ONESTOPBIT;
+        dcbSerialParams.Parity          = NOPARITY;
+        dcbSerialParams.fDsrSensitivity = DTR_CONTROL_ENABLE;
+        dcbSerialParams.fRtsControl     = RTS_CONTROL_ENABLE;
         SetCommState( hComm, &dcbSerialParams );
 
         COMMTIMEOUTS timeouts                = { 0 };
-        timeouts.ReadIntervalTimeout         = 20;
-        timeouts.ReadTotalTimeoutConstant    = 100;
+        timeouts.ReadIntervalTimeout         = 50;
+        timeouts.ReadTotalTimeoutConstant    = 50;
         timeouts.ReadTotalTimeoutMultiplier  = 10;
-        timeouts.WriteTotalTimeoutConstant   = 100;
+        timeouts.WriteTotalTimeoutConstant   = 50;
         timeouts.WriteTotalTimeoutMultiplier = 10;
         if ( !SetCommTimeouts( hComm, &timeouts ) )
         {
             std::cerr << "Error setting timeouts" << std::endl;
         }
+        // PurgeComm( hComm, PURGE_RXCLEAR | PURGE_TXCLEAR );
     }
     ~uart()
     {
@@ -77,8 +82,9 @@ class uart
         while ( !writenBytes )
         {
             WriteFile( hComm,
-                       buffer.data(),
-                       sizeof( buffer[ 0 ] ) * buffer.size(),
+                       //    buffer.data(),
+                       //    buffer.size(),
+                       buffer.c_str(), buffer.size() + 1,
                        &writenBytes,
                        NULL );
         }
