@@ -2,6 +2,7 @@
 #include <cassert>
 #include <errhandlingapi.h>
 #include <handleapi.h>
+#include <minwinbase.h>
 #include <minwindef.h>
 #include <string>
 #include <iostream>
@@ -34,12 +35,10 @@ class uart
         dcbSerialParams.DCBlength = sizeof( dcbSerialParams );
         GetCommState( hComm, &dcbSerialParams );
 
-        dcbSerialParams.BaudRate        = CBR_9600;
-        dcbSerialParams.ByteSize        = 8;
-        dcbSerialParams.StopBits        = ONESTOPBIT;
-        dcbSerialParams.Parity          = NOPARITY;
-        dcbSerialParams.fDsrSensitivity = DTR_CONTROL_ENABLE;
-        dcbSerialParams.fRtsControl     = RTS_CONTROL_ENABLE;
+        dcbSerialParams.BaudRate = CBR_9600;
+        dcbSerialParams.ByteSize = 8;
+        dcbSerialParams.StopBits = ONESTOPBIT;
+        dcbSerialParams.Parity   = NOPARITY;
         SetCommState( hComm, &dcbSerialParams );
 
         COMMTIMEOUTS timeouts                = { 0 };
@@ -52,7 +51,7 @@ class uart
         {
             std::cerr << "Error setting timeouts" << std::endl;
         }
-        // PurgeComm( hComm, PURGE_RXCLEAR | PURGE_TXCLEAR );
+        Sleep( 100 );
     }
     ~uart()
     {
@@ -63,7 +62,7 @@ class uart
     {
         char ch;
         DWORD readedBytes { 0 };
-        while ( ReadFile( hComm, &ch, sizeof( ch ), &readedBytes, NULL ) && readedBytes > 0 )
+        while ( ReadFile( hComm, &ch, 1, &readedBytes, NULL ) && readedBytes > 0 )
         {
             if ( ch == '\n' )
             {
@@ -76,15 +75,19 @@ class uart
         }
     }
 
-    void writeLine( std::string &buffer )
+    void writeLine( char *buffer )
+    {
+        std::string d { buffer };
+        writeLine( d );
+    }
+
+    void writeLine( std::string buffer )
     {
         DWORD writenBytes { 0 };
         while ( !writenBytes )
         {
             WriteFile( hComm,
-                       //    buffer.data(),
-                       //    buffer.size(),
-                       buffer.c_str(), buffer.size() + 1,
+                       buffer.data(), buffer.size(),
                        &writenBytes,
                        NULL );
         }

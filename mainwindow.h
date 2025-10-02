@@ -17,12 +17,12 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
   public:
-    MainWindow( QWidget *parent = nullptr );
+    MainWindow( uart &ard, QWidget *parent = nullptr );
     ~MainWindow();
 
   private:
     Ui::MainWindow *ui;
-    uart Serial;
+    uart &Serial;
 
   private slots:
     void on_lineEdit_editingFinished();
