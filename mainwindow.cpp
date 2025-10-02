@@ -1,9 +1,8 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-#include <qobject.h>
-#include <synchapi.h>
 
-MainWindow::MainWindow( uart &ard, QWidget *parent ) : QMainWindow( parent ), ui( new Ui::MainWindow ), Serial( ard )
+MainWindow::MainWindow( uart &ard, QWidget *parent ) :
+    QMainWindow( parent ), ui( new Ui::MainWindow ), Serial( ard )
 {
     ui->setupUi( this );
 }
@@ -15,9 +14,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_lineEdit_editingFinished()
 {
-    Serial.writeLine( ui->lineEdit->text().toStdString() );
+    Serial.writeLine( ui->lineEdit->text().toStdString() + '\n' );
     ui->lineEdit->clear();
     std::string data;
     Serial.readLine( data );
-    ui->listWidget->addItem( QString( data.c_str() ) );
+    ui->listWidget->addItem( QString::fromStdString( data ) );
 }

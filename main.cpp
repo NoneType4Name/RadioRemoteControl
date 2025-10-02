@@ -1,14 +1,12 @@
 #include "mainwindow.h"
 #include <QApplication>
-#include <synchapi.h>
 
 int main( int argc, char *argv[] )
 {
     QApplication a( argc, argv );
-    uart ard( "COM5" );
+    uart ard( "COM3" );
     Sleep( 100 );
     MainWindow w { ard };
-    // Sleep( 100 );
     // std::string data {};
     // while ( 1 )
     // {
