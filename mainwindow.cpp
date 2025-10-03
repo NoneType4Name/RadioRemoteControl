@@ -10,7 +10,22 @@ MainWindow::MainWindow( uart &ard, QWidget *parent ) :
     ui->setupUi( this );
     m_timer = new QTimer( this );
     connect( m_timer, &QTimer::timeout, this, &MainWindow::onTimerTimeout );
-    m_timer->start( 1 );
+    m_timer->start( 32 );
+    ui->pushButton->setAutoRepeat( 1 );
+    ui->pushButton->setAutoRepeatDelay( 0 );
+    ui->pushButton->setAutoRepeatInterval( 32 );
+    ui->pushButton_w->setAutoRepeat( 1 );
+    ui->pushButton_w->setAutoRepeatDelay( 0 );
+    ui->pushButton_w->setAutoRepeatInterval( 32 );
+    ui->pushButton_a->setAutoRepeat( 1 );
+    ui->pushButton_a->setAutoRepeatDelay( 0 );
+    ui->pushButton_a->setAutoRepeatInterval( 32 );
+    ui->pushButton_s->setAutoRepeat( 1 );
+    ui->pushButton_s->setAutoRepeatDelay( 0 );
+    ui->pushButton_s->setAutoRepeatInterval( 32 );
+    ui->pushButton_d->setAutoRepeat( 1 );
+    ui->pushButton_d->setAutoRepeatDelay( 0 );
+    ui->pushButton_d->setAutoRepeatInterval( 32 );
 }
 
 MainWindow::~MainWindow()
@@ -25,12 +40,15 @@ void MainWindow::keyPressEvent( QKeyEvent *event )
     if ( !m_pressedKeys.contains( event->key() ) )
     {
         m_pressedKeys.insert( event->key() );
+        auto d = event->key();
     }
+    modifiers = event->modifiers();
 }
 
 void MainWindow::keyReleaseEvent( QKeyEvent *event )
 {
     m_pressedKeys.remove( event->key() );
+    modifiers = event->modifiers();
 }
 
 void dummy( MainWindow *wnd )
@@ -50,21 +68,23 @@ void dummy( MainWindow *wnd )
 
 void MainWindow::on_pushButton_w_pressed()
 {
-    if ( pos[ 0 ] < 127 - 5 )
-        pos[ 0 ] += 5;
-    // ui->label->setText( QString::number( pos[ 0 ] ) );
+    if ( pos[ 0 ] < 127 )
+        pos[ 0 ] += ( modifiers & Qt::ShiftModifier ? ( pos[ 0 ] < 127 - 5 ? 5 : 127 - pos[ 0 ] ) : 1 );
+    ui->label->setText( QString::number( pos[ 0 ] ) );
 }
 
 void MainWindow::on_pushButton_s_pressed()
 {
-    if ( pos[ 0 ] > -128 + 5 )
-        pos[ 0 ] -= 5;
+    if ( pos[ 0 ] > -128 )
+        pos[ 0 ] -= ( modifiers & Qt::ShiftModifier ? ( pos[ 0 ] > -128 + 5 ? 5 : pos[ 0 ] - 128 ) : 1 );
+    ui->label->setText( QString::number( pos[ 0 ] ) );
 }
 
 void MainWindow::on_pushButton_pressed()
 {
     pos[ 0 ] = 0;
     pos[ 1 ] = 0;
+    ui->label->setText( QString::number( pos[ 0 ] ) );
 }
 
 void MainWindow::onTimerTimeout()
@@ -77,7 +97,7 @@ void MainWindow::onTimerTimeout()
     {
         ui->pushButton_s->click();
     }
-    if ( m_pressedKeys.contains( Qt::Key_X ) )
+    if ( m_pressedKeys.contains( Qt::Key_Space ) )
     {
         ui->pushButton->click();
     }

@@ -55,6 +55,9 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::NoFocus</enum>
+            </property>
             <property name="text">
              <string>W</string>
             </property>
@@ -98,6 +101,9 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::NoFocus</enum>
+            </property>
             <property name="text">
              <string>A</string>
             </property>
@@ -126,6 +132,9 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::NoFocus</enum>
             </property>
             <property name="text">
              <string>D</string>
@@ -170,6 +179,9 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::NoFocus</enum>
+            </property>
             <property name="text">
              <string>S</string>
             </property>
@@ -206,9 +218,6 @@
        </spacer>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit"/>
-      </item>
-      <item>
        <widget class="QLabel" name="label">
         <property name="text">
          <string/>
@@ -235,6 +244,15 @@
     </item>
     <item>
      <widget class="QPushButton" name="pushButton">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::NoFocus</enum>
+      </property>
       <property name="text">
        <string>space</string>
       </property>

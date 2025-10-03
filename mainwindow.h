@@ -31,6 +31,7 @@ class MainWindow : public QMainWindow
     friend void dummy( MainWindow *wnd );
     QTimer *m_timer;
     QSet<int> m_pressedKeys;
+    Qt::KeyboardModifiers modifiers;
 
   private slots:
     void onTimerTimeout();
