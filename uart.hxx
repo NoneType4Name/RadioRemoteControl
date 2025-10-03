@@ -6,6 +6,7 @@
 #include <minwindef.h>
 #include <string>
 #include <iostream>
+#include <synchapi.h>
 #include <winbase.h>
 #include <winnt.h>
 
@@ -51,7 +52,7 @@ class uart
         {
             std::cerr << "Error setting timeouts" << std::endl;
         }
-        Sleep( 100 );
+        Sleep( 1000 );
     }
     ~uart()
     {
@@ -84,6 +85,7 @@ class uart
     void writeLine( std::string buffer )
     {
         DWORD writenBytes { 0 };
+        buffer += '\n';
         while ( !writenBytes )
         {
             WriteFile( hComm,
