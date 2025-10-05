@@ -25,9 +25,9 @@ class MainWindow : public QMainWindow
   private:
     Ui::MainWindow *ui;
     uart &Serial;
-    int8_t pos[ 2 ] { 0, 0 };
+    uint8_t pos[ 2 ] { 0, 0 };
     std::thread th;
-    bool mayThWork { 1 };
+    bool mayThWork { 0 };
     friend void dummy( MainWindow *wnd );
     QTimer *m_timer;
     QSet<int> m_pressedKeys;

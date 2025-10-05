@@ -1,14 +1,7 @@
 #include <Windows.h>
-#include <cassert>
-#include <errhandlingapi.h>
-#include <handleapi.h>
-#include <minwinbase.h>
-#include <minwindef.h>
 #include <string>
+#include <QString>
 #include <iostream>
-#include <synchapi.h>
-#include <winbase.h>
-#include <winnt.h>
 
 class uart
 {
@@ -59,7 +52,8 @@ class uart
         CloseHandle( hComm );
     }
 
-    void readLine( std::string &buffer )
+    template<typename _T_str>
+    void readLine( _T_str &buffer )
     {
         char ch;
         DWORD readedBytes { 0 };
@@ -76,20 +70,14 @@ class uart
         }
     }
 
-    void writeLine( char *buffer )
-    {
-        std::string d { buffer };
-        writeLine( d );
-    }
-
-    void writeLine( std::string buffer )
+    void writeLine( const uint8_t *d, size_t s )
     {
         DWORD writenBytes { 0 };
-        buffer += '\n';
+        // buffer += '\n';
         while ( !writenBytes )
         {
             WriteFile( hComm,
-                       buffer.data(), buffer.size(),
+                       d, s,
                        &writenBytes,
                        NULL );
         }

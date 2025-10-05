@@ -5,52 +5,54 @@
 RF24 radio( 7, 53 ); // CE, CSN
 
 const uint64_t address[ 2 ] = { 0xE8E8F0F0E1LL, 0xE8E8F0F0E2LL };
+// char data[ 4 ] { };
 
 void setup()
 {
     Serial.begin( 9600 );
     pinMode( LED_BUILTIN, OUTPUT );
     radio.begin();
-    radio.setAutoAck(false);
-    radio.openWritingPipe( address[ 0 ] );
-    radio.openReadingPipe( 1, address[ 1 ] );
+    // radio.openReadingPipe( 1, address[ 1 ] );
+    radio.setPayloadSize( 3 );
     radio.setChannel( 19 );
-    radio.setPayloadSize( 13 );
     radio.setPALevel( RF24_PA_HIGH );
-    radio.setDataRate( RF24_250KBPS );
-    radio.startListening();
+    radio.setDataRate( RF24_1MBPS );
+    radio.setAutoAck( 0 );
+    radio.openWritingPipe( address[ 0 ] );
+    radio.stopListening();
+    // radio.enableDynamicPayloads();
+    // radio.setRetries(5, 15); // 5 повторов с задержкой 1500 мкс
+    // radio.flush_tx();
+    // radio.writeAckPayload( 1, data, 3 );
 }
-
-// String data;
-char data[14]{};
-String str;
-
+uint8_t ch;
+uint8_t data[4] = {};
 void loop()
 {
-    int i = radio.available();
-    digitalWrite(LED_BUILTIN, 0);
-    if ( i )
-    {
-      digitalWrite(LED_BUILTIN, 1);
-        // data.reserve( 13 );
-        radio.read( data, 13 );
-        data[13] = '\0';
-        Serial.println( data );
-    }
+    // digitalWrite( LED_BUILTIN, 0 );
     if ( Serial.available() )
+    // data[1] = 10;
     {
-        char d = Serial.read();
-        if ( d != '\n' )
+        ch = Serial.readBytes(data, 4);
+        if ( radio.write( data, 3 ) )
         {
-            str += d;
+            digitalWrite( LED_BUILTIN, 1 );
+            // radio.startListening();
+            // radio.openReadingPipe( 1, address[ 1 ] );
+            // delay(1);
+            // if ( radio.available() )
+            // {
+                // int i = radio.getDynamicPayloadSize();
+                // char *d = new char[i+1];
+                // d[i] = '\0';
+                // radio.read( data, 3 );
+                // delete[] d;
+            //}
         }
-        // else
-        // {
-        //     if ( str[ 0 ] == 'p' )
-        //     {
-        //         analogWrite( LED_BUILTIN, map( str[ 1 ], -128, 127, 0, 255 ) );
-        //     }
-        //     str = "";
         // }
     }
+    data[0] = 0;
+    data[1] = 0;
+    data[2] = 0;
+    data[3] = 0;
 }
