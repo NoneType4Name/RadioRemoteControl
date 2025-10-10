@@ -25,7 +25,7 @@ class MainWindow : public QMainWindow
   private:
     Ui::MainWindow *ui;
     uart &Serial;
-    uint8_t pos[ 2 ] { 0, 0 };
+    uint8_t pos[ 2 ] { 128, 128 };
     std::thread th;
     bool mayThWork { 0 };
     friend void dummy( MainWindow *wnd );
@@ -39,6 +39,8 @@ class MainWindow : public QMainWindow
     void keyReleaseEvent( QKeyEvent *event );
     void on_pushButton_w_pressed();
     void on_pushButton_s_pressed();
+    void on_pushButton_a_pressed();
+    void on_pushButton_d_pressed();
     void on_pushButton_pressed();
 };
 

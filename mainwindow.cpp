@@ -3,7 +3,6 @@
 #include <qnamespace.h>
 #include <QTimer>
 #include <qobject.h>
-#include <string>
 
 MainWindow::MainWindow( uart &ard, QWidget *parent ) :
     QMainWindow( parent ), ui( new Ui::MainWindow ), Serial( ard ), th( dummy, this )
@@ -80,22 +79,47 @@ void MainWindow::on_pushButton_s_pressed()
         pos[ 0 ] -= ( modifiers & Qt::ShiftModifier ? ( pos[ 0 ] > 4 ? 5 : pos[ 0 ] ) : 1 );
 }
 
+void MainWindow::on_pushButton_d_pressed()
+{
+    pos[ 1 ] = 0;
+    // if ( pos[ 1 ] < 225 )
+    // pos[ 1 ] += ( modifiers & Qt::ShiftModifier ? ( pos[ 1 ] < 251 ? 5 : 255 - pos[ 1 ] ) : 1 );
+}
+
+void MainWindow::on_pushButton_a_pressed()
+{
+    pos[ 1 ] = 220;
+    // if ( pos[ 1 ] > 0 )
+    //     pos[ 1 ] -= ( modifiers & Qt::ShiftModifier ? ( pos[ 1 ] > 4 ? 5 : pos[ 1 ] ) : 1 );
+}
+
 void MainWindow::on_pushButton_pressed()
 {
-    pos[ 0 ] = 0;
-    pos[ 1 ] = 0;
+    pos[ 0 ] = 128;
+    pos[ 1 ] = 125;
 }
 
 void MainWindow::onTimerTimeout()
 {
-    if ( m_pressedKeys.contains( Qt::Key_W ) )
+    if ( m_pressedKeys.contains( Qt::Key_W ) || m_pressedKeys.contains( Qt::Key_S ) )
     {
-        ui->pushButton_w->click();
+        if ( m_pressedKeys.contains( Qt::Key_W ) )
+            ui->pushButton_w->click();
+        if ( m_pressedKeys.contains( Qt::Key_S ) )
+            ui->pushButton_s->click();
     }
-    if ( m_pressedKeys.contains( Qt::Key_S ) )
+    // else
+    // pos[ 0 ] = 128;
+    if ( m_pressedKeys.contains( Qt::Key_A ) || m_pressedKeys.contains( Qt::Key_D ) )
     {
-        ui->pushButton_s->click();
+        if ( m_pressedKeys.contains( Qt::Key_D ) )
+            ui->pushButton_d->click();
+        if ( m_pressedKeys.contains( Qt::Key_A ) )
+            ui->pushButton_a->click();
     }
+    else
+        pos[ 1 ] = 125;
+
     if ( m_pressedKeys.contains( Qt::Key_Space ) )
     {
         ui->pushButton->click();
